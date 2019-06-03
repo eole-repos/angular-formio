@@ -1,0 +1,39 @@
+version: 2
+jobs:
+  build:
+    machine: true
+    environment:
+      PJ_NAME: 'angular-formio'
+      FORK_URL: 'https://github.com/formio'
+      ORIG_URL: 'https://github.com/eole-repos'
+    steps:
+      - add_ssh_keys: 
+          fingerprints:
+                  - 'f7:47:2a:dd:96:1a:af:e4:33:9d:88:f2:1b:9c:34:23'
+      - checkout
+      - run: git clone $FORK_URL/$PJ_NAME
+        #- run: echo "git clone $FORK_URL/$PJ_NAME"
+      - run: cd  $PJ_NAME
+        #- run: echo "cd  $PJ_NAME"
+      - run: git remote add upstream $ORIG_URL/$PJ_NAME
+        #- run: echo "git remote add upstream $ORIG_URL/$PJ_NAME"
+      - run: git checkout master
+      - run: git pull --no-edit upstream master
+      - run: git push origin master
+workflows: 
+  version: 2
+  cron_workflow: 
+    triggers:
+      - schedule:
+          # UTC+0
+          cron: "0 16 * * *"
+          filters:
+            branches:
+              only: 
+                - master
+    jobs: 
+      - build
+  normal_workflow: 
+     jobs: 
+      - build
+

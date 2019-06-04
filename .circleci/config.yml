@@ -4,8 +4,8 @@ jobs:
     machine: true
     environment:
       PJ_NAME: 'angular-formio'
-      FORK_URL: 'https://github.com/formio'
-      ORIG_URL: 'https://github.com/eole-repos'
+      FORK_URL: 'https://github.com/eole-repos'
+      ORIG_URL: 'https://github.com/formio'
     steps:
       - add_ssh_keys: 
           fingerprints:

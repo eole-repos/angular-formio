@@ -43,9 +43,9 @@ export class FormioGridComponent implements OnChanges, OnInit, AfterViewInit {
   @Output() rowAction: EventEmitter<object>;
   @Output() createItem: EventEmitter<any>;
   @Output() error: EventEmitter<any>;
-  @ViewChild('headerTemplate', {read: ViewContainerRef}) headerElement: ViewContainerRef;
-  @ViewChild('bodyTemplate', {read: ViewContainerRef}) bodyElement: ViewContainerRef;
-  @ViewChild('footerTemplate', {read: ViewContainerRef}) footerElement: ViewContainerRef;
+  @ViewChild('headerTemplate', {read: ViewContainerRef, static: true}) headerElement: ViewContainerRef;
+  @ViewChild('bodyTemplate', {read: ViewContainerRef, static: true}) bodyElement: ViewContainerRef;
+  @ViewChild('footerTemplate', {read: ViewContainerRef, static: true}) footerElement: ViewContainerRef;
 
   public page = 0;
   public isLoading = false;
@@ -172,22 +172,21 @@ export class FormioGridComponent implements OnChanges, OnInit, AfterViewInit {
 
   refreshGrid(query?: any) {
     this.alerts.setAlerts([]);
-    query = query || {};
-    query = assign(query, this.query);
-    if (!query.hasOwnProperty('limit')) {
-      query.limit = 10;
+    this.query = query || this.query;
+    if (!this.query.hasOwnProperty('limit')) {
+      this.query.limit = 10;
     }
-    if (!query.hasOwnProperty('skip')) {
-      query.skip = 0;
+    if (!this.query.hasOwnProperty('skip')) {
+      this.query.skip = 0;
     }
     this.loading = true;
     this.ref.detectChanges();
     Formio.cache = {};
     let loader = null;
     if (this.items) {
-      loader = Promise.resolve(this.body.setRows(query, this.items));
+      loader = Promise.resolve(this.body.setRows(this.query, this.items));
     } else {
-      loader = this.body.load(this.formio, query);
+      loader = this.body.load(this.formio, this.query);
     }
 
     loader.then(info => {

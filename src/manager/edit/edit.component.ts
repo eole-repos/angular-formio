@@ -10,9 +10,9 @@ import _ from 'lodash';
   templateUrl: './edit.component.html'
 })
 export class FormManagerEditComponent implements AfterViewInit {
-  @ViewChild(FormBuilderComponent) builder: FormBuilderComponent;
-  @ViewChild('title') formTitle: ElementRef;
-  @ViewChild('type') formType: ElementRef;
+  @ViewChild(FormBuilderComponent, {static: false}) builder: FormBuilderComponent;
+  @ViewChild('title', {static: false}) formTitle: ElementRef;
+  @ViewChild('type', {static: false}) formType: ElementRef;
   public form: any;
   public loading: Boolean;
   public formReady: Boolean;

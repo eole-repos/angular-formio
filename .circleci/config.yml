@@ -20,6 +20,9 @@ jobs:
       - run: git remote add upstream $ORIG_URL/$PJ_NAME
         #- run: echo "git remote add upstream $ORIG_URL/$PJ_NAME"
       - run: git checkout master
+      - run: git fetch upstream
+      - run: git add -A
+      - run: git commit -m "[ci skip]"
       - run: git pull --no-edit upstream master
       - run: git push origin master
 workflows: 

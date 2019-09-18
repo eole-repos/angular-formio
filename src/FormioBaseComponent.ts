@@ -1,30 +1,27 @@
-import { Component, OnInit, Optional, ViewEncapsulation, Input } from '@angular/core';
-import { FormioLoader } from '../loader/formio.loader';
-import { FormioAppConfig } from '../../formio.config';
-<<<<<<< HEAD
+import {
+  Input,
+  Output,
+  EventEmitter,
+  OnInit,
+  OnChanges,
+  OnDestroy,
+  Optional,
+  ElementRef,
+  ViewChild
+} from '@angular/core';
+import { FormioService } from './formio.service';
+import { FormioLoader } from './components/loader/formio.loader';
+import { FormioAlerts } from './components/alerts/formio.alerts';
+import { FormioAppConfig } from './formio.config';
 import {
   FormioForm,
   FormioOptions,
   FormioError,
   FormioRefreshValue
-} from '../../formio.common';
+} from './formio.common';
 import { isEmpty, get, assign } from 'lodash';
-import { Formio, Form, Utils } from 'formiojs';
-=======
-import { Formio, Form, Utils } from 'formiojs';
-import { FormioBaseComponent } from '../../FormioBaseComponent';
->>>>>>> upstream/master
 
-/* tslint:disable */
-@Component({
-  selector: 'formio',
-  templateUrl: './formio.component.html',
-  styleUrls: ['./formio.component.scss'],
-  encapsulation: ViewEncapsulation.None,
-})
-/* tslint:enable */
-<<<<<<< HEAD
-export class FormioComponent implements OnInit, OnChanges, OnDestroy {
+export class FormioBaseComponent implements OnInit, OnChanges, OnDestroy {
   @Input() form?: FormioForm;
   @Input() submission?: any = {};
   @Input() src?: string;
@@ -33,10 +30,8 @@ export class FormioComponent implements OnInit, OnChanges, OnDestroy {
   @Input() options?: FormioOptions;
   @Input() formioOptions?: any;
   @Input() renderOptions?: any;
-  @Input() submitOptions?: any;
   @Input() readOnly ? = false;
   @Input() viewOnly ? = false;
-  @Input() noeval ? = false;
   @Input() hideComponents?: string[];
   @Input() refresh?: EventEmitter<FormioRefreshValue>;
   @Input() error?: EventEmitter<any>;
@@ -55,7 +50,7 @@ export class FormioComponent implements OnInit, OnChanges, OnDestroy {
   @Output() errorChange = new EventEmitter<any>();
   @Output() formLoad = new EventEmitter<any>();
   @Output() submissionLoad = new EventEmitter<any>();
-  @Output() ready = new EventEmitter<FormioComponent>();
+  @Output() ready = new EventEmitter<FormioBaseComponent>();
   @ViewChild('formio', {static: true}) formioElement?: ElementRef<any>;
 
   public formio: any;
@@ -66,26 +61,111 @@ export class FormioComponent implements OnInit, OnChanges, OnDestroy {
   private formioReadyResolve: any;
   private submitting = false;
 
-=======
-export class FormioComponent extends FormioBaseComponent implements OnInit {
-  @Input() noeval ? = false;
->>>>>>> upstream/master
   constructor(
     public loader: FormioLoader,
     @Optional() public config: FormioAppConfig,
   ) {
-    super(loader, config);
-    if (this.config) {
-      Formio.setBaseUrl(this.config.apiUrl);
-      Formio.setProjectUrl(this.config.appUrl);
-    } else {
-      console.warn('You must provide an AppConfig within your application!');
+    this.formioReady = new Promise((ready) => {
+      this.formioReadyResolve = ready;
+    });
+  }
+
+  getRenderer() {
+    return this.renderer;
+  }
+
+  getRendererOptions() {
+    return assign({}, {
+      icons: get(this.config, 'icons', 'fontawesome'),
+      noAlerts: get(this.options, 'noAlerts', true),
+      readOnly: this.readOnly,
+      viewAsHtml: this.viewOnly,
+      i18n: get(this.options, 'i18n', null),
+      fileService: get(this.options, 'fileService', null),
+      hooks: this.hooks
+    }, this.renderOptions || {});
+  }
+
+  createRenderer() {
+    const Renderer = this.getRenderer();
+    const form = (new Renderer(
+      this.formioElement ? this.formioElement.nativeElement : null,
+      this.form,
+      this.getRendererOptions()
+    ));
+    return form.instance;
+  }
+
+  setForm(form: FormioForm) {
+    this.form = form;
+    if (this.formio) {
+      this.formio.destroy();
     }
+    // Clear out the element to render the new form.
+    if (this.formioElement && this.formioElement.nativeElement) {
+      this.formioElement.nativeElement.innerHTML = '';
+    }
+    this.formio = this.createRenderer();
+    if (this.url) {
+      this.formio.setUrl(this.url, this.formioOptions || {});
+    }
+    if (this.src) {
+      this.formio.setUrl(this.src, this.formioOptions || {});
+    }
+    this.formio.nosubmit = true;
+    this.formio.on('prevPage', (data: any) => this.onPrevPage(data));
+    this.formio.on('nextPage', (data: any) => this.onNextPage(data));
+    this.formio.on('change', (value: any) => this.change.emit(value));
+    this.formio.on('customEvent', (event: any) =>
+      this.customEvent.emit(event)
+    );
+    this.formio.on('submit', (submission: any) =>
+      this.submitForm(submission)
+    );
+    this.formio.on('error', (err: any) => this.onError(err));
+    this.formio.on('render', () => this.render.emit());
+    this.formio.on('formLoad', (loadedForm: any) =>
+      this.formLoad.emit(loadedForm)
+    );
+
+    this.formio.form = this.form;
+    return this.formio.ready.then(() => {
+      this.loader.loading = false;
+      this.ready.emit(this);
+      this.formioReadyResolve(this.formio);
+      if (this.formio.submissionReady) {
+        this.formio.submissionReady.then((submission) => {
+          this.submissionLoad.emit(submission);
+        });
+      }
+      return this.formio;
+    });
+  }
+
+  initialize() {
+    if (this.initialized) {
+      return;
+    }
+
+    this.options = Object.assign(
+      {
+        errors: {
+          message: 'Please fix the following errors before submitting.'
+        },
+        alerts: {
+          submitMessage: 'Submission Complete.'
+        },
+        disableAlerts: false,
+        hooks: {
+          beforeSubmit: null
+        }
+      },
+      this.options
+    );
+    this.initialized = true;
   }
 
   ngOnInit() {
-    Utils.Evaluator.noeval = this.noeval;
-<<<<<<< HEAD
     this.initialize();
 
     if (this.language) {
@@ -237,6 +317,10 @@ export class FormioComponent extends FormioBaseComponent implements OnInit {
     // Emit these errors again.
     this.errorChange.emit(errors);
 
+    if (err.silent) {
+      return;
+    }
+
     // Iterate through each one and set the alerts array.
     errors.forEach((error: any) => {
       const {
@@ -274,7 +358,7 @@ export class FormioComponent extends FormioBaseComponent implements OnInit {
   submitExecute(submission: object) {
     if (this.service && !this.url) {
       this.service
-        .saveSubmission(submission, this.submitOptions)
+        .saveSubmission(submission)
         .subscribe(
           (sub: {}) => this.onSubmit(sub, true),
           err => this.onError(err)
@@ -306,12 +390,5 @@ export class FormioComponent extends FormioBaseComponent implements OnInit {
     } else {
       this.submitExecute(submission);
     }
-=======
-    super.ngOnInit();
-  }
-
-  getRenderer() {
-    return this.renderer || Form;
->>>>>>> upstream/master
   }
 }

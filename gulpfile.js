@@ -11,6 +11,12 @@ var gulp = require('gulp'),
   runSequence = require('run-sequence'),
   inlineResources = require('./tools/gulp/inline-resources');
 
+// Execute the ngc command from command line.
+const ngc = function(commands, cb) {
+  const isWin = /^win/.test(process.platform);
+  const child = spawn(isWin ? 'ngc.cmd' : 'ngc', commands);
+  child.on('close', () => cb())
+};
 const rootFolder = path.join(__dirname);
 const srcFolder = path.join(rootFolder, 'src');
 const tmpFolder = path.join(rootFolder, '.tmp');
@@ -60,6 +66,7 @@ gulp.task('styles-formio', () => {
   return gulp.src([`${tmpFolder}/components/formio/formio.component.scss`])
     .pipe(sass().on('error', sass.logError))
     .pipe(cleanCSS({compatibility: 'ie8'}))
+    .pipe(replace(/content\:'\\/g, "content:'\\\\"))
     .pipe(gulp.dest(`${tmpFolder}/components/formio`));
 });
 
@@ -67,6 +74,7 @@ gulp.task('styles-builder', () => {
   return gulp.src([`${tmpFolder}/components/formbuilder/formbuilder.component.scss`])
     .pipe(sass().on('error', sass.logError))
     .pipe(cleanCSS({compatibility: 'ie8'}))
+    .pipe(replace(/content\:'\\/g, "content:'\\\\"))
     .pipe(gulp.dest(`${tmpFolder}/components/formbuilder`));
 });
 
@@ -90,12 +98,9 @@ gulp.task('inline-resources', function () {
   return inlineResources(tmpFolder);
 });
 
-
 /**
  * 4. Run the Angular compiler, ngc, on the /.tmp folder. This will output all
  *    compiled modules to the /build folder.
- *
- *    As of Angular 5, ngc accepts an array and no longer returns a promise.
  */
 gulp.task('ngc', function (done) {
   ngc(['--project', `${tmpFolder}/tsconfig.es5.json`], done);
@@ -157,6 +162,9 @@ const rollupFesm = function(name, path) {
       // when subdirectories are used in the `src` directory.
       allowRealFiles: true,
 
+      // Disable strict mode for compilation of SCSS.
+      useStrict: false,
+
       // A list of IDs of modules that should remain external to the bundle
       // See "external" in https://rollupjs.org/#core-functionality
       external: [
@@ -198,6 +206,9 @@ const rollupUmd = function(name, path) {
       // This prevents errors like: 'path/file' does not exist in the hypothetical file system
       // when subdirectories are used in the `src` directory.
       allowRealFiles: true,
+
+      // Disable strict mode for compilation of SCSS.
+      useStrict: false,
 
       // A list of IDs of modules that should remain external to the bundle
       // See "external" in https://rollupjs.org/#core-functionality

@@ -2,6 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<<<<<<< HEAD
 ### 3.27.0
 ### Fixed
  - Long standing issue requiring (window as any).global = window;
@@ -10,6 +11,18 @@ All notable changes to this project will be documented in this file. See [standa
 ### 3.22.0
 ### Added
  - A way to separate the Auth url from the App url.
+=======
+### 4.0.2
+### Changed
+ - Upgraded dependencies and formiojs@4.0.6
+
+### 4.0.0
+### Breaking Changes
+ - Only those described @ https://github.com/formio/formio.js/blob/master/Changelog.md#breaking-changes
+
+### Changed
+ - Upgraded core renderer to 4.x.
+>>>>>>> upstream/master
 
 ### 3.18.0
 ### Changed

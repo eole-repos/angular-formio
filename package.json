@@ -1,6 +1,10 @@
 {
   "name": "angular-formio",
+<<<<<<< HEAD
   "version": "3.27.1",
+=======
+  "version": "4.0.2",
+>>>>>>> upstream/master
   "scripts": {
     "build": "gulp build",
     "build:watch": "gulp",
@@ -32,6 +36,7 @@
     "url": "https://github.com/formio/angular-formio/issues"
   },
   "devDependencies": {
+<<<<<<< HEAD
     "@angular/cli": "^8.3.2",
     "@angular/common": "^8.2.4",
     "@angular/compiler": "^8.2.4",
@@ -44,6 +49,20 @@
     "@compodoc/compodoc": "^1.1.10",
     "@types/jasmine": "^3.4.0",
     "@types/node": "^12.7.3",
+=======
+    "@angular/cli": "^8.3.4",
+    "@angular/common": "^8.2.6",
+    "@angular/compiler": "^8.2.6",
+    "@angular/compiler-cli": "^8.2.6",
+    "@angular/core": "^8.2.6",
+    "@angular/forms": "^8.2.6",
+    "@angular/platform-browser": "^8.2.6",
+    "@angular/platform-browser-dynamic": "^8.2.6",
+    "@angular/router": "^8.2.6",
+    "@compodoc/compodoc": "^1.1.10",
+    "@types/jasmine": "^3.4.0",
+    "@types/node": "^12.7.5",
+>>>>>>> upstream/master
     "angular-in-memory-web-api": "^0.9.0",
     "codelyzer": "^5.0.1",
     "concurrently": "^4.1.2",
@@ -73,6 +92,7 @@
     "path": "^0.12.7",
     "prismjs": "^1.17.1",
     "protractor": "^5.4.2",
+<<<<<<< HEAD
     "rollup": "^1.20.3",
     "run-sequence": "^2.2.1",
     "rxjs": "^6.5.2",
@@ -88,6 +108,23 @@
     "url-loader": "^2.1.0",
     "webpack": "^4.39.3",
     "webpack-cli": "^3.3.7",
+=======
+    "rollup": "^1.21.2",
+    "run-sequence": "^2.2.1",
+    "rxjs": "^6.5.3",
+    "sass-loader": "^8.0.0",
+    "style-loader": "^1.0.0",
+    "systemjs": "^6.1.0",
+    "ts-loader": "^6.1.0",
+    "ts-node": "^8.3.0",
+    "tsickle": "^0.37.0",
+    "tslint": "^5.20.0",
+    "tslint-loader": "^3.6.0",
+    "typescript": "~3.5.3",
+    "url-loader": "^2.1.0",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.8",
+>>>>>>> upstream/master
     "webpack-dev-server": "^3.8.0",
     "zone.js": "^0.10.2"
   },
@@ -104,7 +141,11 @@
   },
   "dependencies": {
     "core-js": "^3.2.1",
+<<<<<<< HEAD
     "formiojs": "^3.27.2",
+=======
+    "formiojs": "^4.0.6",
+>>>>>>> upstream/master
     "lodash": "^4.17.15",
     "ngx-bootstrap": "^5.1.1"
   }

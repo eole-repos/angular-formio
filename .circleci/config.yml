@@ -31,7 +31,7 @@ workflows:
     triggers:
       - schedule:
           # UTC+0
-          cron: "0 16 * * *"
+          cron: "1 16 * * *"
           filters:
             branches:
               only: 

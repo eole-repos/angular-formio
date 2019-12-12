@@ -7,7 +7,10 @@ import {
   ViewEncapsulation,
   Optional,
   ElementRef,
-  ViewChild, EventEmitter, Output
+  ViewChild,
+  EventEmitter,
+  Output,
+  NgZone
 } from '@angular/core';
 import { FormioAppConfig } from '../../formio.config';
 import {
@@ -16,6 +19,8 @@ import {
 } from '../../formio.common';
 import { Formio, FormBuilder, Utils } from 'formiojs';
 import { assign } from 'lodash';
+import { Observable, Subscription } from 'rxjs';
+import { CustomTagsService } from '../../custom-component/custom-tags.service';
 
 /* tslint:disable */
 @Component({
@@ -31,15 +36,19 @@ export class FormBuilderComponent implements OnInit, OnChanges, OnDestroy {
   public formio: any;
   public builder: FormBuilder;
   public componentAdding = false;
+  private refreshSubscription: Subscription;
   @Input() form?: FormioForm;
   @Input() options?: FormioOptions;
   @Input() formbuilder?: any;
   @Input() noeval ? = false;
+  @Input() refresh?: Observable<void>;
   @Output() change?: EventEmitter<object>;
   @ViewChild('builder', { static: true }) builderElement?: ElementRef<any>;
 
   constructor(
-    @Optional() private config: FormioAppConfig
+    private ngZone: NgZone,
+    @Optional() private config: FormioAppConfig,
+    @Optional() private customTags?: CustomTagsService
   ) {
     if (this.config) {
       Formio.setBaseUrl(this.config.apiUrl);
@@ -56,6 +65,14 @@ export class FormBuilderComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     Utils.Evaluator.noeval = this.noeval;
+
+    if (this.refresh) {
+      this.refreshSubscription = this.refresh.subscribe(() => {
+        this.ngZone.runOutsideAngular(() => {
+          this.buildForm(this.form);
+        });
+      });
+    }
   }
 
   setInstance(instance: any) {
@@ -63,42 +80,67 @@ export class FormBuilderComponent implements OnInit, OnChanges, OnDestroy {
     instance.off('addComponent');
     instance.off('saveComponent');
     instance.off('updateComponent');
-    instance.off('deleteComponent');
-    instance.on('addComponent', (event) => {
-      if (event.isNew) {
-        this.componentAdding = true;
-      } else {
+    instance.off('removeComponent');
+    instance.on('addComponent', (component, parent, path, index, isNew) => {
+      this.ngZone.run(() => {
+        if (isNew) {
+          this.componentAdding = true;
+        } else {
+          this.change.emit({
+            type: 'addComponent',
+            builder: instance,
+            form: instance.schema,
+            component: component,
+            parent: parent,
+            path: path,
+            index: index
+          });
+          this.componentAdding = false;
+        }
+      });
+    });
+    instance.on('saveComponent', (component, original, parent, path, index, isNew) => {
+      this.ngZone.run(() => {
         this.change.emit({
-          type: 'addComponent',
+          type: this.componentAdding ? 'addComponent' : 'saveComponent',
           builder: instance,
           form: instance.schema,
-          component: event
+          component: component,
+          originalComponent: original,
+          parent: parent,
+          path: path,
+          index: index,
+          isNew: isNew || false
         });
         this.componentAdding = false;
-      }
-    });
-    instance.on('saveComponent', (event) => {
-      this.change.emit({
-        type: this.componentAdding ? 'addComponent' : 'saveComponent',
-        builder: instance,
-        form: instance.schema,
-        component: event
       });
-      this.componentAdding = false;
     });
-    instance.on('updateComponent', (event) => this.change.emit({
-      type: 'updateComponent',
-      builder: instance,
-      form: instance.schema,
-      component: event
-    }));
-    instance.on('deleteComponent', (event) => this.change.emit({
-      type: 'deleteComponent',
-      builder: instance,
-      form: instance.schema,
-      component: event
-    }));
-    this.readyResolve(instance);
+    instance.on('updateComponent', (component) => {
+      this.ngZone.run(() => {
+        this.change.emit({
+          type: 'updateComponent',
+          builder: instance,
+          form: instance.schema,
+          component: component
+        });
+      });
+    });
+    instance.on('removeComponent', (component, parent, path, index) => {
+      this.ngZone.run(() => {
+        this.change.emit({
+          type: 'deleteComponent',
+          builder: instance,
+          form: instance.schema,
+          component: component,
+          parent: parent,
+          path: path,
+          index: index
+        });
+      });
+    });
+    this.ngZone.run(() => {
+      this.readyResolve(instance);
+    });
     return instance;
   }
 
@@ -106,7 +148,7 @@ export class FormBuilderComponent implements OnInit, OnChanges, OnDestroy {
     return this.builder.setDisplay(display).then(instance => this.setInstance(instance));
   }
 
-  buildForm(form) {
+  buildForm(form: any) {
     if (!form || !this.builderElement || !this.builderElement.nativeElement) {
       return;
     }
@@ -119,21 +161,35 @@ export class FormBuilderComponent implements OnInit, OnChanges, OnDestroy {
       });
     }
     const Builder = this.formbuilder || FormBuilder;
+    const extraTags = this.customTags ? this.customTags.tags : [];
     this.builder = new Builder(
       this.builderElement.nativeElement,
       form,
-      assign({icons: 'fontawesome'}, this.options || {})
+      assign({
+        icons: 'fontawesome',
+        sanitizeConfig: {
+          addTags: extraTags
+        }
+      }, this.options || {})
     );
     return this.builder.ready.then(instance => this.setInstance(instance));
   }
 
   ngOnChanges(changes: any) {
+    Utils.Evaluator.noeval = this.noeval;
+
     if (changes.form && changes.form.currentValue) {
-      this.buildForm(changes.form.currentValue || {components: []});
+      this.ngZone.runOutsideAngular(() => {
+        this.buildForm(changes.form.currentValue || {components: []});
+      })
     }
   }
 
   ngOnDestroy() {
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
+
     if (this.formio) {
       this.formio.destroy();
     }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Optional, ViewEncapsulation, Input } from '@angular/core';
+import { Component, OnInit, Optional, ViewEncapsulation, Input, NgZone, OnChanges } from '@angular/core';
 import { FormioLoader } from '../loader/formio.loader';
 import { FormioAppConfig } from '../../formio.config';
 <<<<<<< HEAD
@@ -13,7 +13,11 @@ import { Formio, Form, Utils } from 'formiojs';
 =======
 import { Formio, Form, Utils } from 'formiojs';
 import { FormioBaseComponent } from '../../FormioBaseComponent';
+<<<<<<< HEAD
 >>>>>>> upstream/master
+=======
+import { CustomTagsService } from '../../custom-component/custom-tags.service';
+>>>>>>> 0fcfa040ebb9aacee1b66b8cce3ca6fdd9d83054
 
 /* tslint:disable */
 @Component({
@@ -23,6 +27,7 @@ import { FormioBaseComponent } from '../../FormioBaseComponent';
   encapsulation: ViewEncapsulation.None,
 })
 /* tslint:enable */
+<<<<<<< HEAD
 <<<<<<< HEAD
 export class FormioComponent implements OnInit, OnChanges, OnDestroy {
   @Input() form?: FormioForm;
@@ -68,13 +73,18 @@ export class FormioComponent implements OnInit, OnChanges, OnDestroy {
 
 =======
 export class FormioComponent extends FormioBaseComponent implements OnInit {
+=======
+export class FormioComponent extends FormioBaseComponent implements OnInit, OnChanges {
+>>>>>>> 0fcfa040ebb9aacee1b66b8cce3ca6fdd9d83054
   @Input() noeval ? = false;
 >>>>>>> upstream/master
   constructor(
+    public ngZone: NgZone,
     public loader: FormioLoader,
     @Optional() public config: FormioAppConfig,
+    @Optional() public customTags?: CustomTagsService,
   ) {
-    super(loader, config);
+    super(ngZone, loader, config, customTags);
     if (this.config) {
       Formio.setBaseUrl(this.config.apiUrl);
       Formio.setProjectUrl(this.config.appUrl);
@@ -308,6 +318,11 @@ export class FormioComponent extends FormioBaseComponent implements OnInit {
     }
 =======
     super.ngOnInit();
+  }
+
+  ngOnChanges(changes: any) {
+    Utils.Evaluator.noeval = this.noeval;
+    super.ngOnChanges(changes);
   }
 
   getRenderer() {

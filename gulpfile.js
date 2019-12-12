@@ -66,7 +66,7 @@ gulp.task('styles-formio', () => {
   return gulp.src([`${tmpFolder}/components/formio/formio.component.scss`])
     .pipe(sass().on('error', sass.logError))
     .pipe(cleanCSS({compatibility: 'ie8'}))
-    .pipe(replace(/content\:'\\/g, "content:'\\\\"))
+    .pipe(replace(/\\/g, "\\\\"))
     .pipe(gulp.dest(`${tmpFolder}/components/formio`));
 });
 
@@ -74,7 +74,7 @@ gulp.task('styles-builder', () => {
   return gulp.src([`${tmpFolder}/components/formbuilder/formbuilder.component.scss`])
     .pipe(sass().on('error', sass.logError))
     .pipe(cleanCSS({compatibility: 'ie8'}))
-    .pipe(replace(/content\:'\\/g, "content:'\\\\"))
+    .pipe(replace(/\\/g, "\\\\"))
     .pipe(gulp.dest(`${tmpFolder}/components/formbuilder`));
 });
 
@@ -148,14 +148,9 @@ gulp.task('ngc-resource-angular', function (done) {
  */
 const rollupFesm = function(name, path) {
   path = path || '';
-  return gulp.src(`${buildFolder}${path}/**/*.js`)
+  return gulp.src(`${buildFolder}${path}/index.js`)
   // transform the files here.
     .pipe(rollup({
-
-      // Bundle's entry point
-      // See "input" in https://rollupjs.org/#core-functionality
-      input: `${buildFolder}${path}/index.js`,
-
       // Allow mixing of hypothetical and actual files. "Actual" files can be files
       // accessed by Rollup or produced by plugins further down the chain.
       // This prevents errors like: 'path/file' does not exist in the hypothetical file system
@@ -193,14 +188,9 @@ gulp.task('rollup-resource:fesm', () => rollupFesm('formio-resource', '/resource
  */
 const rollupUmd = function(name, path) {
   path = path || '';
-  return gulp.src(`${buildFolder}${path}/**/*.js`)
+  return gulp.src(`${buildFolder}${path}/index.js`)
   // transform the files here.
     .pipe(rollup({
-
-      // Bundle's entry point
-      // See "input" in https://rollupjs.org/#core-functionality
-      input: `${buildFolder}${path}/index.js`,
-
       // Allow mixing of hypothetical and actual files. "Actual" files can be files
       // accessed by Rollup or produced by plugins further down the chain.
       // This prevents errors like: 'path/file' does not exist in the hypothetical file system

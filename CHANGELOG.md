@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ### 3.27.0
 ### Fixed
  - Long standing issue requiring (window as any).global = window;
@@ -12,6 +13,127 @@ All notable changes to this project will be documented in this file. See [standa
 ### Added
  - A way to separate the Auth url from the App url.
 =======
+=======
+## 4.3.11
+### Changed
+ - Upgrade formiojs to 4.8.0-rc.2
+
+## 4.3.10
+### Changed
+ - Upgrade formiojs to 4.8.0-rc.1
+
+## 4.3.9
+### Changed
+ - Upgrade formiojs to 4.8.0-beta.9
+
+## 4.3.8
+### Fixed
+ - The ResourceCompoennt class to not have a private constructor argument which breaks extended classes.
+
+## 4.3.7
+### Changed
+ - Upgrade formiojs to 4.8.0-beta.8
+
+## 4.3.6
+### Fixed
+ - UI not updating after getting user permissions in ```FormioResourceComponent```
+ 
+### Changed
+ - Upgrade formiojs to 4.8.0-beta.6
+
+## 4.3.5
+### Changed
+ - Upgraded formiojs to 4.8.0-beta.5
+
+## 4.3.4
+### Changed
+ - Upgrade formio.js to 4.8.0-beta.4
+ - Fixed the noeval paramter to turn off eval into the renderer.
+ - Upgraded core-js@3.4.7, @angular/cli@8.3.20, @types/node@12.12.14, css-loader@3.2.1, rollup@1.27.8, style-loader@1.0.1, systemjs@6.1.7, ts-node@8.5.4, url-loader@3.0.0
+
+## 4.3.3
+### Changed
+ - Explicit field options for custom components
+ - Upgrade formio.js to 4.7.8
+
+## 4.3.2
+### Fixed
+ - Register form within Form Manager.
+ 
+### Changed
+ - Upgraded formiojs@4.7.6
+
+## 4.3.1
+### Fixed
+ - No longer require angular/elements as peer dependencies.
+
+### Changed
+ - Upgraded formio.js to 4.7.4
+
+## 4.3.0
+### Changed
+ - Upgraded formio.js to 4.7.3
+
+## 4.3.0-beta.5
+### Fixed
+ - Fix gulpfile rollup configuration
+ - Fixed updated loader
+ 
+### Changed
+ - Upgraded formiojs@4.7.2
+ - Upgraded core-js@3.3.6, @angular/cli@8.3.17, @angular/common@8.2.13, @angular/compiler@8.2.13, @angular/compiler-cli@8.2.13, @angular/core@8.2.13, @angular/elements@8.2.13, @angular/forms@8.2.13, @angular/platform-browser@8.2.13, @angular/platform-browser-dynamic@8.2.13, @angular/router@8.2.13, @types/jasmine@3.4.6, rollup@1.26.3, tslint@5.20.1, webpack-cli@3.3.10, formiojs@4.7.2, @types/node@12.12.6, fork-ts-checker-webpack-plugin@3.0.1
+
+### 4.3.0-beta.3
+### Changed
+ - Run formio outside of ngZone: https://github.com/formio/angular-formio/pull/388
+ - `NgZone` service is required for main components.
+ - The `FormioLoader` service is updated. Added `setLoading` method. `loading$` flag is available as Observable.
+ - Upgraded dependencies and formiojs@4.6.0
+
+### 4.3.0-beta.2
+### Changed
+ - Upgraded dependencies and formiojs@4.5.0
+
+### 4.3.0-beta.1
+### Added
+ - Added Custom Angular Fields: https://github.com/formio/angular-formio/pull/374
+ - `@angular/elements` added as peer dependency.
+
+### 4.2.6
+### Changed
+ - Upgrade formiojs@4.3.3, webpack@4.41.1
+
+### 4.2.5
+### Changed
+ - Upgrade formiojs@4.3.2
+
+### 4.2.4
+### Changed
+ - Upgrade formiojs@4.3.1
+
+### Added
+ - A way to refresh the form externally with form builder.
+
+### 4.2.1
+### Changed
+ - Upgraded formiojs@4.2.3
+
+### 4.2.0
+### Changed
+ - Upgraded formiojs@4.2.0
+
+### Fixed
+ - Crashes in the FormioBaseComponent when errors are thrown.
+ - Crashes in the submission grid components.
+
+### 4.1.0
+### Changed
+ - Upgraded dependencies and formiojs@4.1.0
+ 
+### Added
+ - Added a submitError event when an error occurs.
+
+>>>>>>> 0fcfa040ebb9aacee1b66b8cce3ca6fdd9d83054
 ### 4.0.2
 ### Changed
  - Upgraded dependencies and formiojs@4.0.6
